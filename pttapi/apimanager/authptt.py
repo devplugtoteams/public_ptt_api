@@ -76,9 +76,10 @@ class authptt(object):
     
     def __setAuthdict(self,authfromrequest):
         self.code=None
-        if self.__validAuthDict(authfromrequest):                                
-                    self.authdict=authfromrequest
-                    return True
+        if self.__validAuthDict(authfromrequest):  
+            myloggin(message="auth credentials renewed : ok", level="INFO", pr=True)                              
+            self.authdict=authfromrequest
+            return True
         return False
         
     def auth(self):
@@ -95,7 +96,7 @@ class authptt(object):
         self.authdict=None
         self.code=None
         if self.credentials is not None:
-            r=requests.put(self.getURL("auth.s1"),data=object_to_json(self.credentials),headers=self.__getAuthHeaders())
+            r=requests.put(self.getURL("auth.s1"),data=json.dumps(self.credentials),headers=self.__getAuthHeaders())
             if self.__setCode(r.json()):            
                 return r.json()
         return None 
@@ -115,12 +116,24 @@ class authptt(object):
         myloggin(message="refresh auth", level="INFO", pr=True)
         if self.credentials is not None:
             if self.__validAuthDict():            
-                myloggin(message="refresh auth credentials not None :  url:%s "%self.getURL("refresh"), level="INFO", pr=True)
-                myloggin(message="payload:%s "%self.authdict, level="INFO", pr=True)
-                r=requests.put(self.getURL("refresh"),data=object_to_json(self.authdict),headers=self.__getAuthHeaders())
-                myloggin(message="authdict:%s "%r.json(), level="INFO", pr=True)
-                if self.__setAuthdict(r.json()):
-                    return r.json()
+                myloggin(message="refreshing auth credentials :  url:%s "%self.getURL("refresh"), level="INFO", pr=True)
+                payload={"RefreshToken":self.authdict.get("RefreshToken","-")}
+                myloggin(message="payload:%s "%payload, level="INFO", pr=True)
+                
+                r=requests.put(self.getURL("refresh"),data=json.dumps(payload),headers=self.__getAuthHeaders())
+                newauth=None
+                if r is not None:
+                    newauth=r.json()
+                    if isinstance(newauth, dict):
+                        if newauth.get("result",False):
+                            myloggin(message="Renew ok ", level="INFO", pr=True)
+                            if self.__setAuthdict(r.json()):
+                                return r.json()
+                
+                myloggin(message="[ERROR] Can't renew Oath tokens %s"%("request errr" if newauth is None else newauth), level="INFO", pr=True)
+                            
+                #myloggin(message="authdict:%s "%r.json(), level="INFO", pr=True)
+                
             else:
                 myloggin(message="Refresh authdict not valid %s"%self.authdict, level="ERROR", pr=True)
         return None
