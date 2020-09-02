@@ -11,7 +11,7 @@ with open("README.md", "r") as fh:
     
 setuptools.setup(
     name="pttapi",
-    version="0.0.2",
+    version="0.0.3",
     author="ptt team",
     author_email="pttteam@plug2teams.com",
     description="It's pip... with git.",

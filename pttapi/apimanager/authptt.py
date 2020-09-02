@@ -142,7 +142,7 @@ class authptt(object):
         if self.authdict is None:            
             self.auth()            
         if self.authdict is not None:            
-            if self.authdict.get("Expire",0)<=int(time.time())-15:                
+            if self.authdict.get("Expire",0)<=int(time.time())+15:                
                 myauth=self.refresh()                
                 if myauth is None:
                     self.auth()
