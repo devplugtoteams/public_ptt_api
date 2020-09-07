@@ -3,10 +3,12 @@ Created on 6 abr. 2020
 
 @author: isidoro
 '''
-import time
-from pttapi.utils.utils import object_to_json,json_to_object
-from pttapi.utils.log import mylogging,mylogginException
 import os
+import time
+
+from pttapi.utils.log import mylogging, mylogginException
+from pttapi.utils.utils import object_to_json, json_to_object
+
 
 def getBasePath(lastpath="ptt"):
     lastpath="/%s"%lastpath

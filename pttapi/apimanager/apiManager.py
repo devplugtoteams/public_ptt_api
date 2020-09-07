@@ -4,14 +4,29 @@ Created on 25 jul. 2018
 @author: isanlui
 '''
  
-from pttapi.apimanager.authptt import authptt
-from pttapi.utils.log import mylogging
-from pttapi.utils.files import ensure_dir
 import json
-
-
-import requests
 import os
+
+from pttapi.apimanager.authptt import authptt
+from pttapi.utils.files import ensure_dir
+from pttapi.utils.log import mylogging
+import requests
+
+
+def makeRequestException(self,description,requestreturn):
+        if requestreturn is not None:
+            try:
+                msg="%s, status:%s description:%s"%(description,requestreturn.status_code,requestreturn.text)
+            except:
+                msg=description
+        else:
+            msg=description
+                
+        mylogging(message="[ERROR] %s"%msg, level="ERROR", pr=False)
+        
+        raise Exception('apiptt [ERROR] %s'%msg)
+            
+        pass
 
 
 class apiManager():
@@ -60,8 +75,7 @@ class apiManager():
         if r.status_code ==200:
             return r.json()
         else:
-            mylogging(message="[ERROR] getEntityList, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
-            return None
+            makeRequestException(description="getEntityList",requestreturn=r)
         
     
     def getAPIList(self):        
@@ -69,10 +83,7 @@ class apiManager():
         if r.status_code ==200:
             return r.json()
         else:
-            mylogging(message="[ERROR] getAPIList, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
-            return None
-        return None
-    
+            makeRequestException(description="getAPIList",requestreturn=r)
     
     
     def setCredentials(self,user,password,permisionlist=[]):        
@@ -126,10 +137,8 @@ class apiptt(object):
         self.configschema["stage"]=stage        
         self.configschema["stage"]=stage        
         self.setTest(activate=False)  
-        self.mauth=myauth       
+        self.mauth=myauth
     
-    def __makeException(self,description,requestreturn):
-        pass
                 
     def __getURLBase(self,mytype="data"):              
         return self.configschema.get("url").replace(":stage",self.configschema.get("stage")).replace(":type",mytype)
@@ -170,12 +179,11 @@ class apiptt(object):
         murl="%s/%s"%(self.__getURLItem(),itemid)        
         #print("myurl:%s"%murl)        
         r=requests.get(murl,headers=self.mauth.getAuthHeaders(xapikey=self.configschema["x-api-key"]))
-        if r.status_code ==200:
-            return r.json()
-            mylogging(message="[ERROR] getting item, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+        if r.status_code ==200:                        
+            return r.json()            
         else:
-            mylogging(message="[ERROR] getting item, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
-            return None
+            makeRequestException(description="getItem error",requestreturn=r)            
+            
         
     
     def getItemByIdName(self,idname,itemid):
@@ -185,9 +193,8 @@ class apiptt(object):
         if r.status_code ==200:
             return r.json()
         else:
-            mylogging(message="[ERROR] getting item by name, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
-            raise Exception('spam   56565 eggs')
-            return None
+            makeRequestException(description="getting item by name ",requestreturn=r)
+            
     
     def __setItem(self,myobject,itemid=None,params=None):
         payload = json.dumps(myobject)        
@@ -201,7 +208,7 @@ class apiptt(object):
         if r.status_code ==200:
             return r.json()
         else:
-            mylogging(message="[ERROR] setting item, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+            makeRequestException(description="setting item",requestreturn=r)            
             return None
     
     def __updateItem(self,myobject,itemid=None,params=None):
@@ -216,10 +223,10 @@ class apiptt(object):
             if r.status_code ==200:
                 return r.json()
             else:
-                mylogging(message="[ERROR] updating item status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+                makeRequestException(description="Updating item",requestreturn=r)
                 
         
-        return None
+        makeRequestException(description="Updating item , invalid itemid",requestreturn=None)
     
     def __deleteItem(self,myobject=None,itemid=None,params=None):
         payload = json.dumps(myobject)
@@ -228,8 +235,8 @@ class apiptt(object):
         if r.status_code ==200:
             return r.json()
         else:
-            mylogging(message="[ERROR] deleting item status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
-            return None
+            makeRequestException(description="deleting item",requestreturn=r)            
+            
      
     
     def createItem(self,myobject,owner=None):
@@ -361,9 +368,9 @@ class apiptt(object):
         if r.status_code ==200:
             return r.json()
         else:
-            mylogging(message="[ERROR] Executing action, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
-            return None  
-        return None    
+            makeRequestException(description="Executing action",requestreturn=r)            
+              
+            
     
     
     def deleteItem(self,itemid,owner=None):

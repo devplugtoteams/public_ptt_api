@@ -26,19 +26,19 @@ It defines classes_and_methods
 import os
 import types
 import re"""
-import json
+from datetime import datetime, date
 from decimal import Decimal
-import uuid
-from datetime import datetime,date
-from pttapi.utils.log import myloggin,mylogginException
+import io
+import json
 import random
 import string
+import uuid
+
+from pttapi.utils.log import myloggin, mylogginException
+
+
 #from imemcached import fromMemcached,toMencached
 #import memcache
- 
-
-import io
-
 PY2=False
 basestring = str
 

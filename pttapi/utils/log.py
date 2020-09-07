@@ -5,12 +5,13 @@ Created on 8/4/2015
 
 @author: isanlui
 '''
-import os
-from optparse import OptionParser
-import logging
 from datetime import datetime
-import traceback
+import logging
+from optparse import OptionParser
+import os
 import sys
+import traceback
+
 
 try:
     import syslog

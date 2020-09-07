@@ -4,8 +4,9 @@ Created on 18 sept. 2018
 @author: isanlui
 '''
 
-from pttapi.utils.utils import myint
 from pttapi.utils.log import myloggin 
+from pttapi.utils.utils import myint
+
 
 class apiresult():
     RESPONSE="response"

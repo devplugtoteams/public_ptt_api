@@ -4,12 +4,13 @@ Created on 25 jul. 2018
 @author: isanlui
 '''
 
-import time
 import json
-from pttapi.utils.utils import object_to_json
-from pttapi.utils.log import myloggin,mylogginException
+import time
 
+from pttapi.utils.log import myloggin, mylogginException
+from pttapi.utils.utils import object_to_json
 import requests
+
 
 class authptt(object):
 
