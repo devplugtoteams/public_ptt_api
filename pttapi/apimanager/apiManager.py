@@ -59,12 +59,18 @@ class apiManager():
         r=requests.get(self.__getURLAPI(),headers=self.mauth.getAuthHeaders(xapikey=self.configschema["x-api-key"]))
         if r.status_code ==200:
             return r.json()
-        return None
+        else:
+            mylogging(message="[ERROR] getEntityList, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+            return None
+        
     
     def getAPIList(self):        
         r=requests.get(self.__getURLBase(),headers=self.mauth.getAuthHeaders(xapikey=self.configschema["x-api-key"]))
         if r.status_code ==200:
             return r.json()
+        else:
+            mylogging(message="[ERROR] getAPIList, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+            return None
         return None
     
     
@@ -110,7 +116,7 @@ class apiptt(object):
     '''
     classdocs
     '''
-   
+    
     def __init__(self, config,apiname,entityname,stage="api",myauth=None):
         '''      Constructor       '''
         
@@ -120,8 +126,11 @@ class apiptt(object):
         self.configschema["stage"]=stage        
         self.configschema["stage"]=stage        
         self.setTest(activate=False)  
-        self.mauth=myauth
-        
+        self.mauth=myauth       
+    
+    def __makeException(self,description,requestreturn):
+        pass
+                
     def __getURLBase(self,mytype="data"):              
         return self.configschema.get("url").replace(":stage",self.configschema.get("stage")).replace(":type",mytype)
        
@@ -152,7 +161,10 @@ class apiptt(object):
         r=requests.get(self.__getURLItem(),headers=self.mauth.getAuthHeaders(xapikey=self.configschema["x-api-key"]),params=None)
         if r.status_code ==200:            
             return r.json()
-        return None
+        else:
+            mylogging(message="[ERROR] getting item list, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+            return None
+        
         
     def getItem(self,itemid):
         murl="%s/%s"%(self.__getURLItem(),itemid)        
@@ -160,7 +172,11 @@ class apiptt(object):
         r=requests.get(murl,headers=self.mauth.getAuthHeaders(xapikey=self.configschema["x-api-key"]))
         if r.status_code ==200:
             return r.json()
-        return None
+            mylogging(message="[ERROR] getting item, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+        else:
+            mylogging(message="[ERROR] getting item, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+            return None
+        
     
     def getItemByIdName(self,idname,itemid):
         murl="%s/%s?idname=%s"%(self.__getURLItem(),itemid,idname)        
@@ -168,7 +184,10 @@ class apiptt(object):
         r=requests.get(murl,headers=self.mauth.getAuthHeaders(xapikey=self.configschema["x-api-key"]))
         if r.status_code ==200:
             return r.json()
-        return None
+        else:
+            mylogging(message="[ERROR] getting item by name, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+            raise Exception('spam   56565 eggs')
+            return None
     
     def __setItem(self,myobject,itemid=None,params=None):
         payload = json.dumps(myobject)        
@@ -181,7 +200,9 @@ class apiptt(object):
         
         if r.status_code ==200:
             return r.json()
-        return None
+        else:
+            mylogging(message="[ERROR] setting item, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+            return None
     
     def __updateItem(self,myobject,itemid=None,params=None):
         if "id" in myobject:
@@ -194,6 +215,9 @@ class apiptt(object):
             r=requests.patch(myurl, data=payload,headers=self.mauth.getAuthHeaders(xapikey=self.configschema["x-api-key"]),params=params)
             if r.status_code ==200:
                 return r.json()
+            else:
+                mylogging(message="[ERROR] updating item status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+                
         
         return None
     
@@ -203,7 +227,9 @@ class apiptt(object):
         r=requests.delete(myurl,data=payload,headers=self.mauth.getAuthHeaders(xapikey=self.configschema["x-api-key"]),params=params)
         if r.status_code ==200:
             return r.json()
-        return None
+        else:
+            mylogging(message="[ERROR] deleting item status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+            return None
      
     
     def createItem(self,myobject,owner=None):
@@ -333,7 +359,10 @@ class apiptt(object):
                
         r=requests.post(myurl, data=payload,headers=self.mauth.getAuthHeaders(xapikey=self.configschema["x-api-key"]),params=params)        
         if r.status_code ==200:
-            return r.json()  
+            return r.json()
+        else:
+            mylogging(message="[ERROR] Executing action, status:%s description:%s"%(r.status_code,r.text), level="ERROR", pr=False)
+            return None  
         return None    
     
     
