@@ -13,7 +13,7 @@ from pttapi.utils.log import mylogging
 import requests
 
 
-def makeRequestException(self,description,requestreturn):
+def makeRequestException(description,requestreturn):
         if requestreturn is not None:
             try:
                 msg="%s, status:%s description:%s"%(description,requestreturn.status_code,requestreturn.text)
